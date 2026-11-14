@@ -1,0 +1,14 @@
+__pycache__/
+.DS_Store
+.venv/
+node_modules/
+backups/
+dist/
+design/
+docs/*.json
+docs/SHA256SUMS.txt
+release/*
+!release/gallery/
+release/gallery/*
+!release/gallery/TabTalk-Settings-EN-840.png
+!release/gallery/TabTalk-Keyboard-EN-840.png

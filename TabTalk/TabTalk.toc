@@ -1,0 +1,15 @@
+## Interface: 16001
+## Title: TabTalk
+## Title-zhCN: TabTalk
+## Title-zhTW: TabTalk
+## Notes: Quiet, lightweight chat-window cycling and per-window outgoing destinations.
+## Notes-zhCN: Tab 切换聊天窗口；每个窗口独立设置发送目标。
+## Author: Cody
+## Version: 1.0.0
+## SavedVariablesPerCharacter: TabTalkDB
+## IconTexture: Interface\AddOns\TabTalk\Media\Icon
+
+Locales.lua
+Core.lua
+Main.lua
+Options.lua
