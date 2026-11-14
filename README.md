@@ -1,61 +1,42 @@
-# TabTalk — World of Warcraft: Forever
+# TabTalk — 魔兽世界：无限
 
-A lightweight chat-window switching addon for **World of Warcraft: Forever（魔兽世界：无限）1.60.1**, Interface **16001**.
+为 **World of Warcraft: Forever 1.60.1（Interface 16001）** 制作的轻量聊天窗口切换插件。内置简体中文与英文。
 
-[简体中文](README.zh-CN.md) · [Downloads](https://github.com/iCodyYang/TabTalk/releases) · [Report an issue](https://github.com/iCodyYang/TabTalk/issues)
+[English](README.en.md) · [下载安装包](https://github.com/iCodyYang/TabTalk/releases) · [反馈问题](https://github.com/iCodyYang/TabTalk/issues)
 
-Press **Enter**, then **Tab** or **Shift+Tab** to cycle through your configured chat windows. Each window can have its own outgoing destination, while your draft and cursor position stay intact.
+## 安装与使用
 
-## Install
+1. 下载 Release 中的 `TabTalk-1.0.0-Forever.zip`，解压到 `_forever_/Interface/AddOns/`。正确层级为 `TabTalk/TabTalk.toc`。
+2. 从源码安装时，复制仓库内层的 `TabTalk/` 文件夹。首次安装后重启游戏。
+3. 使用游戏原生设置创建聊天窗口，然后点小地图图标或输入 `/tabtalk`（也支持 `/ttalk`）。
+4. 为每个窗口指定发送目标，调整循环顺序。
+5. 回车进入输入框后，Tab 切到下一窗口，Shift+Tab 返回上一窗口，保留草稿和光标。
 
-Download `TabTalk-1.0.0-Forever.zip` from Releases and extract the **TabTalk** folder into `_forever_/Interface/AddOns/`.
-The resulting path must be `_forever_/Interface/AddOns/TabTalk/TabTalk.toc`.
-When installing from source, copy this repository's inner `TabTalk/` folder, not the repository root. Restart the game after first installation.
+## 功能
 
-## Configure
+- 说话、大喊、表情、小队、团队、自动小队/团队、副本/战场、团警、公会和官员频道。
+- 公共/自定义频道按名称保存；不会误用重新分配的旧频道编号。
+- 私聊可选最后来信者、最近交谈者、固定角色或当前目标。最近联系人规则支持角色和战网私聊，不跨会话保存。
+- 可选择鼠标点击窗口时同步发送目标、跳过不可用目标。
+- 按角色保存设置；独立字体与面板缩放；可拖动圆形小地图图标。
+- 无外部插件库、空闲轮询、周期计时器或聊天历史保存，不自动发送消息。
 
-1. Create chat windows using the game's native chat settings.
-2. Open settings with the minimap button, `/tabtalk`, or `/ttalk`.
-3. Select a window, assign its outgoing destination, and arrange the cycle order.
-4. Press Enter to type, then Tab to move forward or Shift+Tab to move backward.
+插件不创建聊天窗口、不改变窗口消息过滤，也不会根据窗口名猜测发送目标。新窗口默认保持原生频道。
 
-![Keyboard guide — illustrative preview](release/gallery/TabTalk-Keyboard-EN-840.png)
+## 展示
 
-*Illustrative preview, not an in-game screenshot.*
+![中文设置预览](release/gallery/TabTalk-Settings-ZH.png)
 
-New windows keep the native input channel until configured. TabTalk does not create windows or change their message filters.
+以上为设计预览，非游戏截图，实际界面样式有所不同。
 
-## Features
+![快捷键操作说明](release/gallery/TabTalk-Keyboard-ZH.png)
 
-- Say, Yell, Emote, Party, Raid, automatic Party/Raid, Instance/Battleground, Raid Warning, Guild and Officer destinations.
-- Public/custom channels saved by name rather than channel number.
-- Whispers to the last incoming sender, most recent conversation, a specific character, or the current target. Recent-contact rules support character and Battle.net whispers; contacts are not saved across sessions.
-- Optional routing when clicking a chat tab, and skipping unavailable destinations.
-- English and Simplified Chinese, automatic or manually selected.
-- Per-character settings, adjustable font and panel size, draggable circular minimap button.
-- No external addon libraries, idle polling, periodic timers, saved chat history, or automatic message sending. Settings controls are created only when opened.
+## 验证与兼容范围
 
-![English settings — illustrative preview](release/gallery/TabTalk-Settings-EN-840.png)
+仅声明适配 Forever 1.60.1，不声明支持正式服或其他怀旧服分支。战斗日志和临时私聊窗口不参与循环，游戏原有发言权限仍然有效。
 
-*Designed illustration; actual in-game styling differs.*
+此前中文版收到游戏内正常使用反馈；1.0.0 有 Lua 5.1 自动回归测试。英文实机布局、战斗污染及其他聊天插件共存仍需进一步验证，未提供游戏内 CPU/内存实测数据。详见 [测试说明](docs/TESTING.md)。
 
-## Compatibility and testing
+## 许可证
 
-This release targets **Forever 1.60.1 only**. Other WoW branches are not claimed as supported. Combat Log and temporary chat popouts are excluded. Group and guild permissions still apply.
-
-Native slash-command completion and active IME composition retain their handling. Other addons that replace chat windows or take over Tab need separate compatibility testing.
-
-The earlier Chinese build was reported working in game. Version 1.0.0 has automated Lua 5.1 regression coverage; live English-layout, combat/taint and addon coexistence validation remain incomplete. No in-game CPU or memory measurements are claimed.
-
-Run tests with Python and `lupa` installed:
-
-```sh
-python3 -m pip install lupa
-python3 tests/run.py
-```
-
-See [testing notes](docs/TESTING.md) for the manual checklist.
-
-## License
-
-[MIT](LICENSE). Copyright (c) 2026 Cody.
+[MIT License](LICENSE)，Copyright (c) 2026 Cody。

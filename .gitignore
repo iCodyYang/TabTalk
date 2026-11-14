@@ -12,3 +12,5 @@ release/*
 release/gallery/*
 !release/gallery/TabTalk-Settings-EN-840.png
 !release/gallery/TabTalk-Keyboard-EN-840.png
+!release/gallery/TabTalk-Settings-ZH.png
+!release/gallery/TabTalk-Keyboard-ZH.png

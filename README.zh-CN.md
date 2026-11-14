@@ -2,7 +2,7 @@
 
 为 **World of Warcraft: Forever 1.60.1（Interface 16001）** 制作的轻量聊天窗口切换插件。内置简体中文与英文。
 
-[English](README.md) · [下载安装包](https://github.com/iCodyYang/TabTalk/releases) · [反馈问题](https://github.com/iCodyYang/TabTalk/issues)
+[English](README.en.md) · [下载安装包](https://github.com/iCodyYang/TabTalk/releases) · [反馈问题](https://github.com/iCodyYang/TabTalk/issues)
 
 ## 安装与使用
 
@@ -25,11 +25,11 @@
 
 ## 展示
 
-![英文设置预览](release/gallery/TabTalk-Settings-EN-840.png)
+![中文设置预览](release/gallery/TabTalk-Settings-ZH.png)
 
 以上为设计预览，非游戏截图，实际界面样式有所不同。
 
-![快捷键操作说明](release/gallery/TabTalk-Keyboard-EN-840.png)
+![快捷键操作说明](release/gallery/TabTalk-Keyboard-ZH.png)
 
 ## 验证与兼容范围
 
