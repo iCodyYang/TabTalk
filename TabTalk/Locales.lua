@@ -1,6 +1,7 @@
 local _, A = ...
 -- One bilingual package; stable saved route keys are independent of display language.
 local english = {
+    ["战斗记录显示战斗事件，不是发送频道；默认保持当前输入频道，也可在这里另设发送目标。"] = "Combat Log displays combat events, not an outgoing channel. It keeps the current input channel by default; you can assign a destination here.",
     ["保持原生频道"] = "Keep native channel",
     ["说话"] = "Say",
     ["大喊"] = "Yell",
@@ -48,6 +49,9 @@ local english = {
     ["启用"] = "Enable",
     ["显示小地图图标"] = "Minimap icon",
     ["鼠标点窗口时也切频道"] = "Route on mouse selection",
+    ["自动跳过不可用目标"] = "Automatically skip unavailable destinations",
+    ["启用 TabTalk"] = "Enable TabTalk",
+    ["目标不可用"] = "Destination unavailable",
     ["Tab 跳过当前不可用的目标（未组队、尚无私聊等）"] = "Skip unavailable destinations (no group, no whisper contact, etc.)",
     ["已有聊天窗口 · 按下列顺序循环"] = "Chat windows / cycle order",
     ["上移"] = "Up",
@@ -71,7 +75,7 @@ local english = {
 local originals = {}
 for key, value in pairs(english) do originals[value] = key end
 function A.Locale()
-    local mode = A.db and A.db.language or "auto"
+    local mode = A.db and A.db.language or "zhCN"
     if mode == "zhCN" or mode == "enUS" then return mode end
     local locale = GetLocale and GetLocale() or "enUS"
     return (locale == "zhCN" or locale == "zhTW") and "zhCN" or "enUS"

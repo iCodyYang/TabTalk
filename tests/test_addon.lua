@@ -1,5 +1,5 @@
 local A = TEST_ADDON
-local function pressTab(box) return box:GetScript("OnTabPressed")(box) end
+local function pressTab(box) return box:RunScript("OnTabPressed") end
 local checks = 0
 local function eq(actual, expected, label)
     assert(actual == expected, label .. ": expected " .. tostring(expected) .. ", got " .. tostring(actual))
@@ -9,11 +9,33 @@ local function ok(value, label) eq(not not value, true, label) end
 for _, frame in ipairs(objects) do
     if frame.events.PLAYER_LOGIN then frame.scripts.OnEvent(frame, "PLAYER_LOGIN") break end
 end
-eq(#A.db.order, 4, "exclude combat log")
-eq(A.db.order[2], 3, "native window order")
+eq(#sendLog, 0, "login does not send chat")
+eq(#A.db.order, 5, "include combat log")
+eq(A.db.language, "zhCN", "default Chinese")
+eq(A.db.skipUnavailable, false, "all destinations included by default")
+for _, id in ipairs(A.db.order) do ok(A.db.windows[id].enabled, "each window enabled by default") end
+eq(A.db.order[2], 2, "combat log in native window order")
 eq(A.db.windows[3].route, "KEEP", "no guessed routes")
 eq(TabTalkOptions, nil, "options created lazily")
 local box = ChatFrame1.editBox
+ChatFrameUtil.OpenChat("")
+SELECTED_CHAT_FRAME=ChatFrame1
+box:SetText("combat log draft")
+box:SetCursorPosition(3)
+pressTab(box)
+eq(SELECTED_CHAT_FRAME.id, 2, "Tab selects combat log")
+ok(box:HasFocus(), "combat log retains input focus")
+eq(box:GetText(), "combat log draft", "combat log preserves draft")
+pressTab(box)
+eq(SELECTED_CHAT_FRAME.id, 3, "Tab leaves combat log")
+state.shift=true
+pressTab(box)
+eq(SELECTED_CHAT_FRAME.id, 2, "reverse selects combat log")
+state.shift=false
+-- Remaining regression scenarios explicitly opt out of the log and opt into skipping.
+A.db.windows[2].enabled=false
+A.db.skipUnavailable=true
+SELECTED_CHAT_FRAME=ChatFrame1
 A.db.windows[1].route = "SAY"
 A.db.windows[3].route = "PARTY"
 A.db.windows[4].route = "INCOMING"
@@ -64,22 +86,26 @@ pressTab(box)
 eq(SELECTED_CHAT_FRAME.id, 1, "all unavailable windows skipped")
 A.db.skipUnavailable = false
 pressTab(box)
-eq(SELECTED_CHAT_FRAME.id, 3, "can visit unavailable window")
+eq(SELECTED_CHAT_FRAME.id, 3, "skip=false visits unavailable destination")
 local sent = #sendLog
-box:GetScript("OnEnterPressed")(box)
-eq(#sendLog, sent, "unavailable route blocks sending to previous public channel")
-ok(box.header:GetText():find("尚未加入小队", 1, true), "reason only in native input header")
+ok(box:IsShown() and box:HasFocus(), "unavailable targets never steal focus")
+eq(box:GetText(), draft, "unavailable targets keep draft")
 state.group = true
-box:GetScript("OnEnterPressed")(box)
+ChatFrameUtil.OpenChat("", ChatFrame3)
+box = ChatFrame3.editBox
+box:SetText("party message")
+box:RunScript("OnEnterPressed")
 eq(#sendLog, sent + 1, "now available route can send")
 eq(sendLog[#sendLog].kind, "PARTY", "revalidated send destination")
 state.group = false
 A.RouteBox(box, 3)
 box:SetAttribute("chatType", "SAY")
-box:GetScript("OnEnterPressed")(box)
+box:SetText("manual destination")
+box:RunScript("OnEnterPressed")
 eq(sendLog[#sendLog].kind, "SAY", "manual slash routing overrides blocked default")
 box:SetText("/whisper Al")
 eq(pressTab(box), false, "slash autocomplete retained")
+ChatFrameUtil.ActivateChat(box)
 box:SetText("你好")
 box.ime = true
 eq(pressTab(box), false, "Chinese IME composition retained")
@@ -101,6 +127,7 @@ state.imStyle = false
 ChatFrameUtil.SetLastTellTarget("ReplyPerson", "WHISPER")
 SELECTED_CHAT_FRAME = ChatFrame3
 ChatFrameUtil.ReplyTell()
+box = ChatFrame1.editBox
 eq(box:GetChatType(), "WHISPER", "R reply overrides party mapping")
 eq(box:GetTellTarget(), "ReplyPerson", "R recipient preserved")
 ChatFrameUtil.SetLastToldTarget("SentPerson", "WHISPER")

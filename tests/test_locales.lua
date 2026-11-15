@@ -13,11 +13,11 @@ check(table.concat(A.db.order, ",") == order, "language change preserves cycle o
 check(A.db.fontScale == fontScale, "language change preserves font preference")
 local _, reason = A.Resolve({route = "PARTY"}, {group = false})
 check(reason == "Not in a party", "validation reason translated")
-check(TabTalkOptions.enabled.caption:GetText() == "Enable", "existing checkbox text updated live")
+check(TabTalkOptions.enabled.caption:GetText() == "Enable TabTalk", "existing checkbox text updated live")
 check(TabTalkOptions.recipientLabel:GetText() == "Character name (Name-Realm for cross-realm)", "recipient label updated")
-check(TabTalkOptions.language:GetText() == "Language: English", "language picker caption")
+check(TabTalkOptions.language:GetText() == "中文 / EN: EN", "language picker caption")
 check(TabTalkOptions.footer:GetText():find("Saved per character", 1, true), "footer translated")
-check(TabTalkOptions.footer:GetText():find("1.0.0", 1, true), "stable version in footer")
+check(TabTalkOptions.footer:GetText():find(A.VERSION, 1, true), "stable version in footer")
 for key, value in pairs(A.localeStrings) do
     check(value ~= "" and not value:find("[\228-\233]"), "English translation exists: " .. key)
     check(A.T(key) == value, "English lookup: " .. key)
@@ -31,7 +31,7 @@ check(A.Locale() == "enUS", "other client falls back to English")
 A.SetLanguage("zhCN")
 check(A.FontPath() == "Fonts\\ARKai_T.ttf", "Chinese override selects CJK font")
 check(A.labels.PARTY == "小队", "Chinese routes restored")
-check(TabTalkOptions.enabled.caption:GetText() == "启用", "Chinese static labels restored")
+check(TabTalkOptions.enabled.caption:GetText() == "启用 TabTalk", "Chinese static labels restored")
 TEST_LOCALE = "zhCN"
 A.SetLanguage("auto")
 check(A.Locale() == "zhCN", "Chinese client auto")
@@ -41,7 +41,7 @@ local existingDB = A.db
 db.language = nil
 db.windows[1] = {name = "Example", enabled = true, route = "GUILD", target = ""}
 A.InitDB(db)
-check(db.language == "auto", "existing profiles get language default")
+check(db.language == "zhCN", "existing profiles get language default")
 check(db.windows[1].route == "GUILD", "profile migration preserves destination")
 A.InitDB(existingDB)
 TEST_CHECKS = TEST_CHECKS + n

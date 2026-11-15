@@ -2,11 +2,23 @@ function GetLocale() return TEST_LOCALE or "zhCN" end
 -- Purposefully limited client double. It cannot simulate WoW taint/security or IME.
 objects, sendLog, nativeTabs = {}, {}, 0
 local methods = {}
-function methods:SetScript(event, fn) self.scripts[event] = fn end
+function methods:SetScript(event, fn)
+    if self.nativeEnter and (event == "OnEnterPressed" or event == "OnTabPressed") then
+        error("Regression: addon attempted to replace native chat script " .. event)
+    end
+    self.scripts[event] = fn
+end
 function methods:GetScript(event) return self.scripts[event] end
 function methods:HookScript(event, fn)
-    local old = self.scripts[event]
-    self.scripts[event] = function(...) if old then old(...) end fn(...) end
+    self.hooks = self.hooks or {}
+    self.hooks[event] = self.hooks[event] or {}
+    table.insert(self.hooks[event], fn)
+end
+function methods:RunScript(event, ...)
+    local result
+    if self.scripts[event] then result = self.scripts[event](self, ...) end
+    for _, fn in ipairs(self.hooks and self.hooks[event] or {}) do fn(self, ...) end
+    return result
 end
 function methods:RegisterEvent(event) self.events[event] = true end
 function methods:UnregisterEvent(event) self.events[event] = nil end
@@ -27,7 +39,7 @@ function methods:SetColorTexture(r,g,b,a) self.color = {r,g,b,a} end
 function methods:GetName() return self.name end
 function methods:GetID() return self.id end
 function methods:SetID(id) self.id = id end
-function methods:SetText(value) self.text = value if self.scripts.OnTextChanged then self.scripts.OnTextChanged(self, false) end end
+function methods:SetText(value) self.text = value self:RunScript("OnTextChanged", false) end
 function methods:GetText() return self.text or "" end
 function methods:SetAttribute(key, value) self.attrs[key] = value end
 function methods:GetAttribute(key) return self.attrs[key] end
@@ -40,7 +52,7 @@ function methods:GetCursorPosition() return self.cursor or #self:GetText() end
 function methods:SetCursorPosition(value) self.cursor = value end
 function methods:IsShown() return self.shown ~= false end
 function methods:Show() self.shown = true end
-function methods:Hide() self.shown = false if self.scripts.OnHide then self.scripts.OnHide(self) end end
+function methods:Hide() self.shown = false self:RunScript("OnHide") end
 function methods:SetShown(value) if value then self:Show() else self:Hide() end end
 function methods:HasFocus() return self.focus == true end
 function methods:SetFocus() self.focus = true end
@@ -99,6 +111,14 @@ function hooksecurefunc(object, key, fn)
     assert(type(original) == "function", key)
     object[key] = function(...) local result = original(...) fn(...) return result end
 end
+EventRegistry = {callbacks = {}}
+function EventRegistry:RegisterCallback(event, fn, owner)
+    self.callbacks[event] = {fn, owner}
+end
+function EventRegistry:TriggerEvent(event, ...)
+    local callback = self.callbacks[event]
+    if callback then callback[1](callback[2], ...) end
+end
 windows = {}
 function makeWindow(id, name)
     local f = CreateFrame("Frame", "ChatFrame" .. id)
@@ -109,9 +129,22 @@ function makeWindow(id, name)
     f.editBox:SetAttribute("chatType", "SAY")
     f.editBox:SetAttribute("stickyType", "SAY")
     f.editBox:SetScript("OnEnterPressed", function(box)
-        sendLog[#sendLog + 1] = {kind = box:GetChatType(), text = box:GetText(), target = box:GetTellTarget()}
+        if state.autocomplete then return end
+        EventRegistry:TriggerEvent("ChatFrame.OnEditBoxPreSendText", box)
+        if box:GetText():find("%S") then
+            sendLog[#sendLog + 1] = {kind = box:GetChatType(), text = box:GetText(), target = box:GetTellTarget()}
+        end
+        box:SetText("")
+        box:Hide()
     end)
-    f.editBox:SetScript("OnTabPressed", function() nativeTabs = nativeTabs + 1 return false end)
+    f.editBox:SetScript("OnTabPressed", function(box)
+        if AutoCompleteEditBox_OnTabPressed(box) then return false end
+        if ChatEdit_CustomTabPressed and securecall("ChatEdit_CustomTabPressed", box) then return true end
+        nativeTabs = nativeTabs + 1
+        return false
+    end)
+    f.editBox.nativeEnter = f.editBox:GetScript("OnEnterPressed")
+    f.editBox.nativeTab = f.editBox:GetScript("OnTabPressed")
     f.editBox.SecureTabPressed = function() nativeTabs = nativeTabs + 1 end
     local tab = CreateFrame("Button", f.name .. "Tab")
     tab.id = id
@@ -164,7 +197,12 @@ ChatFrameUtil.ReplyTell2 = ChatFrameUtil.ReplyTell
 function ChatFrameUtil.SendBNetTell() ChatFrameUtil.OpenChat("") end
 function ChatFrameUtil.GetCharacterWhisperTargetIfTitleFriend() return state.bnetCharacter end
 function ChatEdit_CustomTabPressed() return false end
-function AutoCompleteEditBox_OnTabPressed() return state.autocomplete end
+function AutoCompleteEditBox_OnTabPressed(box) return state.autocomplete or (AutoCompleteBox and AutoCompleteBox:IsShown() and AutoCompleteBox:GetParent() == box) end
 function securecall(name, ...) return _G[name](...) end
 SELECTED_CHAT_FRAME = ChatFrame1
 SELECTED_DOCK_FRAME = ChatFrame1
+
+function FCFDock_SelectWindow(dock, frame)
+    SELECTED_CHAT_FRAME=frame
+    SELECTED_DOCK_FRAME=frame
+end

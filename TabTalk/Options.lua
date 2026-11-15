@@ -120,7 +120,7 @@ local function refresh()
     if not panel then return end
     if panel.language then
         local mode = A.db.language
-        panel.language:SetText(A.T(mode == "zhCN" and "语言：中文" or mode == "enUS" and "语言：English" or "语言：自动"))
+        panel.language:SetText("中文 / EN: " .. (mode == "zhCN" and "中文" or mode == "enUS" and "EN" or "Auto"))
     end
     if panel.footer then panel.footer:SetText(A.T("设置自动保存到当前角色 · /tabtalk 打开设置 · ") .. A.VERSION) end
     local windows = A.RefreshWindows()
@@ -169,7 +169,8 @@ local function refresh()
     panel.channel:SetText((config.target ~= "" and config.target or A.T("选择已加入的频道")) .. "  v")
     local destination, reason = A.Resolve(config, A.Environment())
     panel.status:SetText(destination and A.T("|cff86d3ad当前可用|r") or "|cffffc773" .. reason .. "|r")
-    panel.explanation:SetText(config.route == "INCOMING" and
+    panel.explanation:SetText(selected == 2 and A.T("战斗记录显示战斗事件，不是发送频道；默认保持当前输入频道，也可在这里另设发送目标。")
+        or config.route == "INCOMING" and
         A.T("只跟随收到的私聊；你主动密别人不会改变此目标。角色私聊和战网私聊都可记录。")
         or config.route == "RECENT" and A.T("跟随最近一次收到或发出的私聊。刷新界面 / 重新登录后重新记录。")
         or config.route == "CHANNEL" and A.T("按频道名称保存，发言时重新查找编号。退出频道时会跳过，不会误发到同编号的其他频道。")
@@ -225,15 +226,15 @@ local function createPanel()
     text(panel, A.T("回车后 Tab → 下一个窗口    Shift + Tab → 上一个窗口"), 24, -51)
     local close = CreateFrame("Button", nil, panel, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", -4, -4)
-    panel.enabled = check(panel, A.T("启用"), 20, -78, function(v) A.db.enabled = v end)
-    panel.enabled.caption:SetWidth(70)
-    panel.minimap = check(panel, A.T("显示小地图图标"), 130, -78, function(v)
+    panel.enabled = check(panel, A.T("启用 TabTalk"), 175, -18, function(v) A.db.enabled = v end)
+    panel.enabled.caption:SetWidth(200)
+    panel.minimap = check(panel, A.T("显示小地图图标"), 20, -78, function(v)
         A.db.minimap = v
         A.minimapButton:SetShown(v)
     end)
     panel.minimap.caption:SetWidth(165)
     panel.click = check(panel, A.T("鼠标点窗口时也切频道"), 330, -78, function(v) A.db.clickRouting = v end)
-    panel.skip = check(panel, A.T("Tab 跳过当前不可用的目标（未组队、尚无私聊等）"), 20, -110,
+    panel.skip = check(panel, A.T("自动跳过不可用目标"), 20, -110,
         function(v) A.db.skipUnavailable = v end)
     panel.skip.caption:SetWidth(690)
     text(panel, A.T("已有聊天窗口 · 按下列顺序循环"), 24, -155, "GameFontNormal")
@@ -305,7 +306,7 @@ local function createPanel()
         A.db.uiScale, A.db.fontScale = 1, 1 resizeFonts(0) fitPanel()
     end)
     panel.language = button(panel, "", 134, 600, -480, function(self)
-        choose(self, {{"auto", "Auto / 跟随游戏"}, {"zhCN", "Chinese / 简体中文"}, {"enUS", "English"}}, A.SetLanguage)
+        choose(self, {{"zhCN", "中文 / Chinese"}, {"enUS", "EN / English"}, {"auto", "Auto / 跟随游戏"}}, A.SetLanguage)
     end)
     panel.footer = text(panel, A.T("设置自动保存到当前角色 · /tabtalk 打开设置 · ") .. A.VERSION, 24, -523, "GameFontDisableSmall")
     panel:RegisterEvent("UI_SCALE_CHANGED")

@@ -1,5 +1,5 @@
 local _, A = ...
-A.VERSION = "1.0.0"
+A.VERSION = "1.0.9"
 A.routes = {
     {"KEEP", A.T("保持原生频道")}, {"SAY", A.T("说话")}, {"YELL", A.T("大喊")},
     {"EMOTE", A.T("表情动作")}, {"PARTY", A.T("小队")}, {"RAID", A.T("团队")},
@@ -14,8 +14,8 @@ A.labels = {}
 for _, route in ipairs(A.routes) do A.labels[route[1]] = route[2] end
 
 function A.NewDB()
-    return {version = 1, enabled = true, skipUnavailable = true,
-        clickRouting = true, minimap = true, angle = 220, uiScale = 1, fontScale = 1, language = "auto",
+    return {version = 1, enabled = true, skipUnavailable = false,
+        clickRouting = true, minimap = true, angle = 220, uiScale = 1, fontScale = 1, language = "zhCN",
         windows = {}, order = {}}
 end
 

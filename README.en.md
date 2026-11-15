@@ -8,7 +8,7 @@ Press **Enter**, then **Tab** or **Shift+Tab** to cycle through your configured 
 
 ## Install
 
-Download `TabTalk-1.0.0-Forever.zip` from Releases and extract the **TabTalk** folder into `_forever_/Interface/AddOns/`.
+Download `TabTalk-1.0.9-Forever.zip` from Releases and extract the **TabTalk** folder into `_forever_/Interface/AddOns/`.
 The resulting path must be `_forever_/Interface/AddOns/TabTalk/TabTalk.toc`.
 When installing from source, copy this repository's inner `TabTalk/` folder, not the repository root. Restart the game after first installation.
 
@@ -31,7 +31,7 @@ New windows keep the native input channel until configured. TabTalk does not cre
 - Public/custom channels saved by name rather than channel number.
 - Whispers to the last incoming sender, most recent conversation, a specific character, or the current target. Recent-contact rules support character and Battle.net whispers; contacts are not saved across sessions.
 - Optional routing when clicking a chat tab, and skipping unavailable destinations.
-- English and Simplified Chinese, automatic or manually selected.
+- Chinese by default for new profiles, with a Chinese / EN selector and optional client-language detection.
 - Per-character settings, adjustable font and panel size, draggable circular minimap button.
 - No external addon libraries, idle polling, periodic timers, saved chat history, or automatic message sending. Settings controls are created only when opened.
 
@@ -41,7 +41,7 @@ New windows keep the native input channel until configured. TabTalk does not cre
 
 ## Compatibility and testing
 
-This release targets **Forever 1.60.1 only**. Other WoW branches are not claimed as supported. Combat Log and temporary chat popouts are excluded. Group and guild permissions still apply.
+This release targets **Forever 1.60.1 only**. Other WoW branches are not claimed as supported. Combat Log is configurable and included; temporary chat popouts are excluded. Group and guild permissions still apply.
 
 Native slash-command completion and active IME composition retain their handling. Other addons that replace chat windows or take over Tab need separate compatibility testing.
 
@@ -59,3 +59,7 @@ See [testing notes](docs/TESTING.md) for the manual checklist.
 ## License
 
 [MIT](LICENSE). Copyright (c) 2026 Cody.
+
+## 1.0.9 validation
+
+661 Lua 5.1 mock assertions pass. Gamepad selection now delegates to the native focus manager, while the keyboard/mouse branch retains its previous path. Steam Deck security-popup and ABXY behavior still require in-game confirmation. Restart the game fully after upgrading.

@@ -9,36 +9,37 @@ state.group = true
 SELECTED_CHAT_FRAME = ChatFrame1
 ChatFrameUtil.ActivateChat(box)
 box:SetText("测试直接按键")
--- Replicates a build that never calls ChatEdit_CustomTabPressed.
-ChatEdit_CustomTabPressed = nil
+-- Native scripts must retain their original identities after initialization.
+check(box:GetScript("OnTabPressed") == box.nativeTab, "native Tab script preserved")
+check(box:GetScript("OnEnterPressed") == box.nativeEnter, "native Enter script preserved")
 local nativeBefore = nativeTabs
-box:GetScript("OnTabPressed")(box)
-check(SELECTED_CHAT_FRAME == ChatFrame3, "widget Tab switches without global extension")
+box:RunScript("OnTabPressed")
+check(SELECTED_CHAT_FRAME == ChatFrame3, "native secure Tab extension switches window")
 check(nativeTabs == nativeBefore, "handled Tab is not processed twice")
 check(box:GetText() == "测试直接按键", "direct dispatch preserves Chinese draft")
 state.shift = true
-box:GetScript("OnTabPressed")(box)
+box:RunScript("OnTabPressed")
 check(SELECTED_CHAT_FRAME == ChatFrame1, "direct Shift Tab reverses")
 state.shift = false
 box.ime = 0
-box:GetScript("OnTabPressed")(box)
+box:RunScript("OnTabPressed")
 check(SELECTED_CHAT_FRAME == ChatFrame3, "numeric zero IME flag does not block Tab")
 box.ime = true
-box:GetScript("OnTabPressed")(box)
+box:RunScript("OnTabPressed")
 check(nativeTabs == nativeBefore + 1, "IME delegates original handler")
 box.ime = false
 box:SetText("/w Al")
-box:GetScript("OnTabPressed")(box)
+box:RunScript("OnTabPressed")
 check(nativeTabs == nativeBefore + 2, "slash completion delegates original handler")
 box:SetText("hello")
 AutoCompleteBox = CreateFrame("Frame", nil, box)
 AutoCompleteBox:Show()
-box:GetScript("OnTabPressed")(box)
-check(nativeTabs == nativeBefore + 3, "visible completion list delegates original handler")
+box:RunScript("OnTabPressed")
+check(nativeTabs == nativeBefore + 2, "completion list consumes native Tab before addon")
 AutoCompleteBox:Hide()
 A.db.enabled = false
-box:GetScript("OnTabPressed")(box)
-check(nativeTabs == nativeBefore + 4, "disabled addon restores native handler")
+box:RunScript("OnTabPressed")
+check(nativeTabs == nativeBefore + 3, "disabled addon restores native handler")
 A.db.enabled = true
 local existing = box:GetScript("OnTabPressed")
 A.RefreshWindows()
